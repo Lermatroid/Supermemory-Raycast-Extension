@@ -13,8 +13,8 @@
   "commands": [
     {
       "name": "add-site-to-supermemory",
-      "title": "Add Site to Supermemory",
-      "description": "",
+      "title": "Quick Create Memory",
+      "description": "Quickly create a memory in Supermemory from the current tab.",
       "mode": "no-view"
     }
   ],
@@ -26,6 +26,14 @@
       "title": "Supermemory API Key",
       "description": "Your API key from Supermemory. Can be obtained on supermemory.ai from Add Memory > Integrations > Your API Key.",
       "placeholder": "your_api_key_here"
+    },
+    {
+      "name": "autospace",
+      "type": "checkbox",
+      "required": false,
+      "default": true,
+      "label": "Auto Select A Space For Your Memory",
+      "description": "If enabled, the extension will automatically pick a space (if applicable) in Supermemory using GPT-4o mini when using Quick Add."
     }
   ],
   "dependencies": {

@@ -29,7 +29,7 @@ const superMemoryAPISchema = createSchema({
       type: z.string(),
     }),
   },
-  "/api/spaces": {
+  "/spaces": {
     method: "get",
     output: z.object({
       spaces: z.array(
@@ -64,14 +64,19 @@ const fetcher = createFetch({
   customFetchImpl: fetch,
 });
 
-export async function createMemoryFromTab(tab: ActiveTab) {
+export async function createMemoryFromTab(tab: ActiveTab, spaces: string[]) {
   return fetcher("/add", {
     body: {
       content: tab.url,
+      spaces: spaces.length > 0 ? spaces : undefined,
     },
   });
 }
 
-export async function getSpaces() {
-  return fetcher("/api/spaces");
+export async function getWriteableSpaces() {
+  const { data, error } = await fetcher("/spaces");
+  if (error) {
+    throw error;
+  }
+  return data.spaces.filter((space) => space.permissions.canEdit || space.permissions.isOwner);
 }
