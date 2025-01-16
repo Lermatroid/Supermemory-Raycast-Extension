@@ -18,9 +18,22 @@
       "mode": "no-view"
     }
   ],
+  "preferences": [
+    {
+      "name": "apikey",
+      "type": "textfield",
+      "required": true,
+      "title": "Supermemory API Key",
+      "description": "Your API key from Supermemory. Can be obtained on supermemory.ai from Add Memory > Integrations > Your API Key.",
+      "placeholder": "your_api_key_here"
+    }
+  ],
   "dependencies": {
+    "@better-fetch/fetch": "^1.1.12",
     "@raycast/api": "^1.88.4",
-    "@raycast/utils": "^1.17.0"
+    "@raycast/utils": "^1.17.0",
+    "cross-fetch": "^4.1.0",
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@raycast/eslint-config": "^1.0.11",
