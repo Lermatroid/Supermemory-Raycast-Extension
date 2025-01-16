@@ -29,6 +29,29 @@ const superMemoryAPISchema = createSchema({
       type: z.string(),
     }),
   },
+  "/api/spaces": {
+    method: "get",
+    output: z.object({
+      spaces: z.array(
+        z.object({
+          id: z.number(),
+          uuid: z.string(),
+          name: z.string(),
+          ownerId: z.number(),
+          isPublic: z.boolean(),
+          createdAt: z.string(),
+          accessType: z.null(),
+          favorited: z.boolean(),
+          permissions: z.object({
+            canRead: z.boolean(),
+            canEdit: z.boolean(),
+            isOwner: z.boolean(),
+          }),
+          owner: z.null(),
+        }),
+      ),
+    }),
+  },
 });
 
 const fetcher = createFetch({
@@ -47,4 +70,8 @@ export async function createMemoryFromTab(tab: ActiveTab) {
       content: tab.url,
     },
   });
+}
+
+export async function getSpaces() {
+  return fetcher("/api/spaces");
 }
