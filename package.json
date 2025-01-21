@@ -12,7 +12,7 @@
   "license": "MIT",
   "commands": [
     {
-      "name": "add-site-to-supermemory",
+      "name": "quick-create-memory",
       "title": "Quick Create Memory",
       "description": "Quickly create a memory in Supermemory from the current tab.",
       "mode": "no-view"
