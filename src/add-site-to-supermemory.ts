@@ -1,4 +1,4 @@
-import { showToast } from "@raycast/api";
+import { showToast, showHUD, PopToRootType } from "@raycast/api";
 import { getActiveTab } from "../lib/active-tab";
 import { createMemoryFromTab } from "../lib/supermemory";
 import { showFailureToast } from "@raycast/utils";
@@ -14,25 +14,29 @@ export default async function Command() {
       return;
     }
 
+    showHUD("Adding to Supermemory...", {
+      popToRootType: PopToRootType.Immediate,
+    });
+
     const spaces = await inferSpaceForTab(tab);
 
-    const { data, error } = await createMemoryFromTab(
+    const { error } = await createMemoryFromTab(
       tab,
       spaces.map((space) => space.uuid),
     );
 
     if (error) {
-      showFailureToast("Something went wrong adding site to Supermemory");
+      if (error.status === 409 && error.statusText === "Conflict") {
+        showToast({ title: "That site is already in your Supermemory!" });
+        return;
+      }
+
+      showFailureToast("Something went wrong adding site to Supermemory!");
       console.error(error);
       return;
     }
 
-    await showToast({
-      title: "Added to Supermemory",
-      message: createSpaceMessage(spaces.map((space) => space.name)),
-    });
-
-    showToast({ title: `created memory with id: ${data.id}` });
+    await showHUD(createSpaceMessage(spaces.map((space) => space.name)));
   } catch (error) {
     console.error(error);
     showFailureToast("Something went wrong adding site to Supermemory");

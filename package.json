@@ -3,7 +3,7 @@
   "name": "supermemory",
   "title": "Supermemory",
   "description": "Add items to your Supermemory directly from Raycast!",
-  "icon": "extension-icon.png",
+  "icon": "supermemory-rounded.png",
   "author": "Lermatroid",
   "categories": [
     "Productivity",

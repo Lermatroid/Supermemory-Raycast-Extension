@@ -31,6 +31,8 @@ export async function inferSpaceForTab(tab: ActiveTab) {
 
   const result = await AI.ask(prompt, { model: AI.Model["OpenAI_GPT4o-mini"] });
 
+  console.log("raw result: ", result);
+
   const parsedAIResult = z.array(z.string()).safeParse(JSON.parse(result));
 
   if (!parsedAIResult.success || parsedAIResult.data.length === 0) {
