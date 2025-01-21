@@ -2,9 +2,13 @@ import { createFetch, createSchema } from "@better-fetch/fetch";
 import { getPrefs } from "./prefs";
 import { z } from "zod";
 import type { ActiveTab } from "./active-tab";
-import { fetch, Headers } from "cross-fetch";
+import { fetch, Headers, Response, Request } from "cross-fetch";
+import { logger } from "@better-fetch/logger";
 
+global.fetch = fetch;
 global.Headers = Headers;
+global.Response = Response;
+global.Request = Request;
 
 const superMemoryAPISchema = createSchema({
   "/add": {
@@ -52,6 +56,31 @@ const superMemoryAPISchema = createSchema({
       ),
     }),
   },
+  "/memories": {
+    method: "get",
+    query: z
+      .object({
+        start: z.number().optional(),
+        count: z.number().optional(),
+        spaceId: z.string().optional(),
+      })
+      .optional(),
+    output: z.object({
+      items: z.array(
+        z.object({
+          id: z.string(),
+          uuid: z.string(),
+          type: z.string(),
+          url: z.string(),
+          title: z.string(),
+          description: z.string().optional(),
+          ogImage: z.string().optional(),
+          createdAt: z.string(),
+        }),
+      ),
+      total: z.string(),
+    }),
+  },
 });
 
 const fetcher = createFetch({
@@ -62,6 +91,7 @@ const fetcher = createFetch({
   },
   schema: superMemoryAPISchema,
   customFetchImpl: fetch,
+  plugins: [logger()],
 });
 
 export async function createMemoryFromTab(tab: ActiveTab, spaces: string[]) {
@@ -79,4 +109,8 @@ export async function getWriteableSpaces() {
     throw error;
   }
   return data.spaces.filter((space) => space.permissions.canEdit || space.permissions.isOwner);
+}
+
+export async function getMemories() {
+  return fetcher("/memories");
 }
