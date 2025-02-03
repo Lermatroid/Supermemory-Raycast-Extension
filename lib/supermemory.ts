@@ -73,8 +73,8 @@ const superMemoryAPISchema = createSchema({
           type: z.string(),
           url: z.string(),
           title: z.string(),
-          description: z.string().optional(),
-          ogImage: z.string().optional(),
+          description: z.string().optional().nullable(),
+          ogImage: z.string().optional().nullable(),
           createdAt: z.string(),
         }),
       ),
@@ -84,14 +84,18 @@ const superMemoryAPISchema = createSchema({
 });
 
 const fetcher = createFetch({
-  baseURL: "https://api.supermemory.ai/api",
+  baseURL: "https://api.supermemory.ai/v1",
   auth: {
     type: "Bearer",
     token: getPrefs().apikey,
   },
   schema: superMemoryAPISchema,
   customFetchImpl: fetch,
-  plugins: [logger()],
+  plugins: [
+    logger({
+      enabled: true,
+    }),
+  ],
 });
 
 export async function createMemoryFromTab(tab: ActiveTab, spaces: string[]) {

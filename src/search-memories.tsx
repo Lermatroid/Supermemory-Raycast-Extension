@@ -20,7 +20,7 @@ export default function Command() {
               }
               key={m.id}
               title={m.title}
-              icon={m.ogImage}
+              icon={m.ogImage ?? undefined}
               subtitle={new URL(m.url).hostname}
             ></List.Item>
           );
