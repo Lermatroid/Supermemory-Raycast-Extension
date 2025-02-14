@@ -103,18 +103,26 @@ export function useAskSupermemory(question: string): SupermemoryResponse {
 
               for (const line of lines) {
                 if (line.trim() === "") continue;
-
+                // Remove any leading letter and colon (e.g., 'e:' or 'd:')
+                let lineContent = line.trim();
+                if (/^[a-z]:/.test(lineContent)) {
+                  lineContent = lineContent.substring(2);
+                }
                 try {
                   // Try parsing as JSON first (new format)
-                  const parsed = JSON.parse(line);
-                  if (parsed.text) {
-                    controller.enqueue(parsed.text);
+                  const parsed = JSON.parse(lineContent);
+                  if (parsed.finishReason === "stop") {
+                    if (currentRequestId === requestIdRef.current && isMounted.current) {
+                      setIsLoading(false);
+                    }
+                    continue; // do not enqueue termination message
                   }
                 } catch (e) {
                   // Try old format if JSON parsing fails
                   if (line.startsWith('0:"')) {
                     const content = line.slice(3, -1).replace(/\\"/g, '"').replace(/\\n/g, "\n");
                     controller.enqueue(content);
+                    continue;
                   }
                 }
               }
@@ -129,7 +137,12 @@ export function useAskSupermemory(question: string): SupermemoryResponse {
           while (true) {
             const { done, value } = await reader.read();
 
-            if (done) break;
+            if (done) {
+              if (currentRequestId === requestIdRef.current && isMounted.current) {
+                setIsLoading(false);
+              }
+              break;
+            }
 
             if (currentRequestId === requestIdRef.current && isMounted.current) {
               setAnswer((prev) => prev + value);
@@ -141,9 +154,6 @@ export function useAskSupermemory(question: string): SupermemoryResponse {
       } catch (err) {
         if (currentRequestId === requestIdRef.current && isMounted.current) {
           setError(err instanceof Error ? err : new Error("Unknown error occurred"));
-        }
-      } finally {
-        if (currentRequestId === requestIdRef.current && isMounted.current) {
           setIsLoading(false);
         }
       }
