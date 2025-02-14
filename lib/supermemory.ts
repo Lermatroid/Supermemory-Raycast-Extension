@@ -4,6 +4,8 @@ import { z } from "zod";
 import type { ActiveTab } from "./active-tab";
 import { fetch, Headers, Response, Request } from "cross-fetch";
 import { logger } from "@better-fetch/logger";
+import { showFailureToast } from "@raycast/utils";
+import { popToRoot } from "@raycast/api";
 
 global.fetch = fetch;
 global.Headers = Headers;
@@ -96,6 +98,14 @@ const fetcher = createFetch({
       enabled: true,
     }),
   ],
+  onError: (error) => {
+    const status = error.error.status;
+
+    if (status === 401) {
+      showFailureToast("Your API key is invalid. Please update it in the extension preferences.");
+      popToRoot({ clearSearchBar: true });
+    }
+  },
 });
 
 export async function createMemoryFromTab(tab: ActiveTab, spaces: string[]) {
@@ -116,5 +126,6 @@ export async function getWriteableSpaces() {
 }
 
 export async function getMemories() {
+  console.log("Getting memories");
   return fetcher("/memories");
 }
