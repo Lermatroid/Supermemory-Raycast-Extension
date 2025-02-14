@@ -51,7 +51,7 @@ export function useAskSupermemory(question: string): SupermemoryResponse {
           throw new Error("API key is not set");
         }
 
-        const response = await fetch("https://api.supermemory.ai/api/chat", {
+        const response = await fetch("https://api.supermemory.ai/v1/chat", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
